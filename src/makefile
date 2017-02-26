@@ -5,4 +5,4 @@ slon1.o: slon1.c slonPrint.h
 slonPrint.o: slonPrint.c slonPrint.h
 	gcc -c slonPrint.c
 clean:
-	del *.o
+	del *.o *.exe
