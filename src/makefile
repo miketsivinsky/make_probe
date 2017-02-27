@@ -1,6 +1,6 @@
 #------------------------------------------------------------------------------
 REF_DIR   = .
-SRC_DIR   = $(REF_DIR)
+SRC_DIR   = .
 INC_DIR   = $(REF_DIR)\..\include
 OBJ_DIR   = $(SRC_DIR)\obj
 TRG_DIR   = $(REF_DIR)\..\bin
