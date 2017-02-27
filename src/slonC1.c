@@ -1,6 +1,6 @@
 #include "slonC.h"
 
-int slonC()
+int slonC1()
 {
     return 11;
 }

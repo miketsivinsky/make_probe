@@ -13,7 +13,7 @@
 int main()
 {
     slonPrint("Hello, world\n");
-    printf("SLONSON = %d, slonC = %d\n",SLONSON,slonC());
+    printf("SLONSON = %d, slonC1 = %d, slonC2 = %d\n",SLONSON,slonC1(),slonC2());
     return 0;
 }
 
