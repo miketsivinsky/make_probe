@@ -1,62 +1,57 @@
 #------------------------------------------------------------------------------
-REF_DIR = .
-SRC_DIR = $(REF_DIR)
-INC_DIR = $(REF_DIR)/../include
-OBJ_DIR = $(SRC_DIR)\obj
-#OBJ_DIR = $(SRC_DIR)
-TGT_DIR = $(REF_DIR)\..\bin
+REF_DIR   = .
+SRC_DIR   = $(REF_DIR)
+INC_DIR   = $(REF_DIR)\..\include
+OBJ_DIR   = $(SRC_DIR)\obj
+TRG_DIR   = $(REF_DIR)\..\bin
 
 #------------------------------------------------------------------------------
-C_FLAGS   = -Wall -std=c99 -I $(INC_DIR) -MMD
-CPP_FLAGS = -Wall -std=c++0x -I $(INC_DIR) -MMD
+C_FLAGS   = -Wall -std=c99 -I $(INC_DIR) 
+CPP_FLAGS = -Wall -std=c++0x -I $(INC_DIR)
 LD_FLAGS  = 
 
 #------------------------------------------------------------------------------
-CC      = gcc
-CXX     = g++
-LD      = gcc
+CC        = gcc
+CXX       = g++
+LD        = gcc
 
-C_SRC   = $(wildcard $(SRC_DIR)/*.c)
-CPP_SRC = $(wildcard $(SRC_DIR)/*.cpp)
-H_SRC   = $(wildcard $(SRC_DIR)/*.h) $(wildcard $(INC_DIR)/*.h)
-TARGET  = slonick.exe
+C_SRC     = $(wildcard $(SRC_DIR)/*.c)
+CPP_SRC   = $(wildcard $(SRC_DIR)/*.cpp)
+H_SRC     = $(wildcard $(SRC_DIR)/*.h) $(wildcard $(INC_DIR)/*.h)
+TRG_FILE  = slonick.exe
 
-OBJ_C   = $(patsubst %.c,%.o,$(C_SRC))
-OBJ_CPP = $(patsubst %.cpp,%.o,$(CPP_SRC))
-
-OBJ_C_LIST   = $(foreach file, $(OBJ_C), $(OBJ_DIR)/$(file))  
-OBJ_CPP_LIST = $(foreach file, $(OBJ_CPP), $(OBJ_DIR)/$(file))  
-
-#------------------------------------------------------------------------------
-$(OBJ_C): %.o : %.c
-	@if not exist $(OBJ_DIR) mkdir $(OBJ_DIR) & if not exist $(OBJ_DIR) exit 1
-	$(CC) $(C_FLAGS) -c $< -o $@
-
+OBJ_C     = $(patsubst %.c,$(OBJ_DIR)/%.o,$(C_SRC))
+OBJ_CPP   = $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(CPP_SRC))
+TARGET    = $(TRG_DIR)\$(TRG_FILE)
 
 #------------------------------------------------------------------------------
 .PHONY: all clean print-%
 
-#all:    $(TARGET)
+all:    $(TARGET)
 
 clean:
-	@if exist $(OBJ_DIR) rd /s /q $(OBJ_DIR) 
-	@if exist $(TGT_DIR)\$(TARGET) del $(TGT_DIR)\$(TARGET)
+	@if exist $(OBJ_DIR) del $(OBJ_DIR)\*.o
+	@if exist $(OBJ_DIR) rd  $(OBJ_DIR)
+	@if exist $(TARGET)  del $(TARGET)
 
 print-%:
 	@echo $* = $($*)
 
 #------------------------------------------------------------------------------
-#$(TARGET): $(OBJ_C) $(OBJ_CPP)
-#	@if not exist $(TGT_DIR) mkdir $(TGT_DIR) & if not exist $(TGT_DIR) exit 1
-#	$(LD) $(LD_FLAGS) -o $(TGT_DIR)/$@ $(OBJ_C_LIST) $(OBJ_CPP_LIST)
+$(TARGET): $(OBJ_C) $(OBJ_CPP) | $(TRG_DIR)
+	$(LD) $(LD_FLAGS) -o $@ $(OBJ_C) $(OBJ_CPP)
 
+$(OBJ_C): $(OBJ_DIR)/%.o : %.c | $(OBJ_DIR)
+	$(CC) $(C_FLAGS) -c $< -o $@
 
-#$(OBJ_CPP): %.o: %.cpp
-#	@if not exist $(OBJ_DIR) mkdir $(OBJ_DIR) & if not exist $(OBJ_DIR) exit 1
-#	$(CXX) $(CPP_FLAGS) -MMD -c $< -o $(OBJ_DIR)/$@
+$(OBJ_CPP): $(OBJ_DIR)/%.o : %.cpp | $(OBJ_DIR)
+	$(CXX) $(CPP_FLAGS) -c $< -o $@
 
-#------------------------------------------------------------------------------
+$(OBJ_DIR):
+	mkdir $(OBJ_DIR)	
 
+$(TRG_DIR):
+	mkdir $(TRG_DIR)	
 
 
 

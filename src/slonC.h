@@ -3,7 +3,8 @@
 #ifndef SLON_C
 #define SLON_C
 
-int slonC();
+int slonC1();
+int slonC2();
 
 #endif /* SLON_C */
 
