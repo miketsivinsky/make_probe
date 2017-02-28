@@ -4,6 +4,7 @@ SRC_DIR   := .
 INC_DIR   := $(REF_DIR)\..\include
 OBJ_DIR   := $(SRC_DIR)\obj
 TRG_DIR   := $(REF_DIR)\..\bin
+TRG_FILE  := slonick.exe
 
 #******************************************************************************
 #   for experiments
@@ -16,14 +17,34 @@ TRG_DIR   := $(REF_DIR)\..\bin
 
 #******************************************************************************
 
+#-----------------------
+define norm_path1
+$(patsubst .\\%,%,$(1))
+endef
+
+#-----------------------
+define norm_path2
+$(patsubst ./%,%,$(1))
+endef
+
+#-----------------------
+define norm_path3
+$(subst /./,/,$(1))
+endef
+
+#-----------------------
+define dep_gen
+$(SRC_DIR)/$(notdir $(patsubst %$(1),%$(2),$(3))) 
+endef
+
 #******************************************************************************
 #   for correct autodependency working when OBJ_DIR != SRC_DIR
 #   I can't use foreach function because there are no change by reference possibility
 #
 
-INC_DIR := $(patsubst .\\%,%,$(INC_DIR))
-OBJ_DIR := $(patsubst .\\%,%,$(OBJ_DIR))
-TRG_DIR := $(patsubst .\\%,%,$(TRG_DIR))
+INC_DIR := $(call norm_path1,$(INC_DIR))
+OBJ_DIR := $(call norm_path1,$(OBJ_DIR))
+TRG_DIR := $(call norm_path1,$(TRG_DIR))
 
 #******************************************************************************
 
@@ -41,17 +62,16 @@ LD        = gcc
 C_SRC     = $(wildcard $(SRC_DIR)/*.c)
 CPP_SRC   = $(wildcard $(SRC_DIR)/*.cpp)
 H_SRC     = $(wildcard $(SRC_DIR)/*.h) $(wildcard $(INC_DIR)/*.h)
-TRG_FILE  = slonick.exe
 
-OBJ_C     := $(patsubst %.c,$(OBJ_DIR)/%.o,$(C_SRC))
-OBJ_CPP   := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(CPP_SRC))
+OBJ_C     = $(patsubst %.c,$(OBJ_DIR)/%.o,$(C_SRC))
+OBJ_CPP   = $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(CPP_SRC))
 TARGET    = $(TRG_DIR)\$(TRG_FILE)
 
 #******************************************************************************
 #   replace all '/./' (except the last in multi '/./'-case) to '/'
 #
-OBJ_C    := $(subst /./,/,$(OBJ_C))
-OBJ_CPP  := $(subst /./,/,$(OBJ_CPP))
+OBJ_C    := $(call norm_path3,$(OBJ_C))
+OBJ_CPP  := $(call norm_path3,$(OBJ_CPP))
 #******************************************************************************
 
 #------------------------------------------------------------------------------
@@ -80,11 +100,11 @@ $(TARGET): $(OBJ_C) $(OBJ_CPP) $(DEPS_C) $(DEPS_CPP) | $(TRG_DIR)
 -include $(DEPS)
 
 #------------------------------------------------------------------------------
-$(OBJ_C) : $(OBJ_DIR)/%.o : %.c | $(OBJ_DIR)
-	$(CC) $(C_FLAGS) $< -o $@
+$(OBJ_C) : $(OBJ_DIR)/%.o : $(OBJ_DIR)/%.d | $(OBJ_DIR)
+	$(CC) $(C_FLAGS) $(call norm_path2,$(call dep_gen,d,c,$<)) -o $@
 
-$(OBJ_CPP): $(OBJ_DIR)/%.o : %.cpp | $(OBJ_DIR)
-	$(CXX) $(CPP_FLAGS) $< -o $@
+$(OBJ_CPP): $(OBJ_DIR)/%.o : $(OBJ_DIR)/%.d | $(OBJ_DIR)
+	$(CXX) $(CPP_FLAGS) $(call norm_path2,$(call dep_gen,d,cpp,$<)) -o $@
 
 $(DEPS_C) : $(OBJ_DIR)/%.d : %.c | $(OBJ_DIR)
 	$(CC) $(C_FLAGS) $< -o $(patsubst %d,%o,$@)
