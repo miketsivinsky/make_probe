@@ -29,8 +29,8 @@ TRG_DIR := $(patsubst .\\%,%,$(TRG_DIR))
 
 #------------------------------------------------------------------------------
 DEPS_FLAGS = -MMD
-C_FLAGS    = -Wall -std=c99   -I $(INC_DIR) $(DEPS_FLAGS)
-CPP_FLAGS  = -Wall -std=c++0x -I $(INC_DIR) $(DEPS_FLAGS)
+C_FLAGS    = -Wall -std=c99   -I $(INC_DIR) $(DEPS_FLAGS) -c
+CPP_FLAGS  = -Wall -std=c++0x -I $(INC_DIR) $(DEPS_FLAGS) -c
 LD_FLAGS   = 
 
 #------------------------------------------------------------------------------
@@ -55,7 +55,9 @@ OBJ_CPP  := $(subst /./,/,$(OBJ_CPP))
 #******************************************************************************
 
 #------------------------------------------------------------------------------
-DEPS      = $(patsubst %.o,%.d,$(OBJ_C) $(OBJ_CPP))
+DEPS_C    = $(patsubst %.o,%.d,$(OBJ_C))
+DEPS_CPP  = $(patsubst %.o,%.d,$(OBJ_CPP))
+DEPS      = $(DEPS_C) $(DEPS_CPP)
 
 #------------------------------------------------------------------------------
 .PHONY: all clean print-%
@@ -72,17 +74,25 @@ print-%:
 	@echo $* = $($*)
 
 #------------------------------------------------------------------------------
-$(TARGET): $(OBJ_C) $(OBJ_CPP) | $(TRG_DIR)
+$(TARGET): $(OBJ_C) $(OBJ_CPP) $(DEPS_C) $(DEPS_CPP) | $(TRG_DIR)
 	$(LD) $(LD_FLAGS) -o $@ $(OBJ_C) $(OBJ_CPP)
 
 -include $(DEPS)
 
+#------------------------------------------------------------------------------
 $(OBJ_C) : $(OBJ_DIR)/%.o : %.c | $(OBJ_DIR)
-	$(CC) $(C_FLAGS) -c $< -o $@
+	$(CC) $(C_FLAGS) $< -o $@
 
 $(OBJ_CPP): $(OBJ_DIR)/%.o : %.cpp | $(OBJ_DIR)
-	$(CXX) $(CPP_FLAGS) -c $< -o $@
+	$(CXX) $(CPP_FLAGS) $< -o $@
 
+$(DEPS_C) : $(OBJ_DIR)/%.d : %.c | $(OBJ_DIR)
+	$(CC) $(C_FLAGS) $< -o $(patsubst %d,%o,$@)
+
+$(DEPS_CPP) : $(OBJ_DIR)/%.d : %.cpp | $(OBJ_DIR)
+	$(CXX) $(CPP_FLAGS) $< -o $(patsubst %d,%o,$@)
+
+#------------------------------------------------------------------------------
 $(OBJ_DIR):
 	mkdir $(OBJ_DIR)	
 
