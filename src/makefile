@@ -8,15 +8,17 @@ TRG_DIR   = $(REF_DIR)/../bin
 TRG_NAME  = slonick
 
 #-----------------------------------------------------------------------------
-ifeq ($(OS),Windows-NT)
+ifeq ($(OS),Windows_NT)
     detected_OS := Windows
 else
     detected_OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 endif
 
 ifeq ($(detected_OS),Windows)
+    fixPath = $(subst /,\,$1)
     TRG_SFX := .exe
-else    
+else
+    fixPath = $1
     TRG_SFX := 
 endif
 
@@ -63,10 +65,12 @@ $(OBJ_CPP): $(OBJ_DIR)/%.o : %.cpp | $(OBJ_DIR)
 	$(CXX) $(CPP_FLAGS) -c $< -o $@
 
 $(OBJ_DIR):
-	mkdir $(OBJ_DIR)	
+	mkdir $(call fixPath, $(abspath $(OBJ_DIR)))		
 
 $(TRG_DIR):
-	mkdir $(TRG_DIR)	
+	mkdir $(call fixPath, $(abspath $(TRG_DIR)))		
+
+
 
 
 
