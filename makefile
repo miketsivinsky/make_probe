@@ -1,9 +1,9 @@
 #------------------------------------------------------------------------------
 REF_DIR   = .
-SRC_DIR   = src
-INC_DIR   = include
-OBJ_DIR   = obj
-TRG_DIR   = bin
+SRC_DIR   = $(REF_DIR)/src
+INC_DIR   = $(REF_DIR)/include
+OBJ_DIR   = $(REF_DIR)/build
+TRG_DIR   = $(REF_DIR)/bin
 
 TRG_NAME  = slonick
 
