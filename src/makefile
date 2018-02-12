@@ -1,9 +1,24 @@
 #------------------------------------------------------------------------------
 REF_DIR   = .
 SRC_DIR   = .
-INC_DIR   = $(REF_DIR)\..\include
-OBJ_DIR   = $(SRC_DIR)\obj
-TRG_DIR   = $(REF_DIR)\..\bin
+INC_DIR   = $(REF_DIR)/../include
+OBJ_DIR   = $(SRC_DIR)/obj
+TRG_DIR   = $(REF_DIR)/../bin
+
+TRG_NAME  = slonick
+
+#-----------------------------------------------------------------------------
+ifeq ($(OS),Windows-NT)
+    detected_OS := Windows
+else
+    detected_OS := $(shell sh -c 'uname -s 2>/dev/null || echo not')
+endif
+
+ifeq ($(detected_OS),Windows)
+    TRG_SFX := .exe
+else    
+    TRG_SFX := 
+endif
 
 #------------------------------------------------------------------------------
 C_FLAGS   = -Wall -std=c99 -I $(INC_DIR) 
@@ -18,11 +33,11 @@ LD        = gcc
 C_SRC     = $(wildcard $(SRC_DIR)/*.c)
 CPP_SRC   = $(wildcard $(SRC_DIR)/*.cpp)
 H_SRC     = $(wildcard $(SRC_DIR)/*.h) $(wildcard $(INC_DIR)/*.h)
-TRG_FILE  = slonick.exe
+TRG_FILE  = $(TRG_NAME)$(TRG_SFX)
 
 OBJ_C     = $(patsubst %.c,$(OBJ_DIR)/%.o,$(C_SRC))
 OBJ_CPP   = $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(CPP_SRC))
-TARGET    = $(TRG_DIR)\$(TRG_FILE)
+TARGET    = $(TRG_DIR)/$(TRG_FILE)
 
 #------------------------------------------------------------------------------
 .PHONY: all clean print-%
