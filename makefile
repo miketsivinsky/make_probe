@@ -41,14 +41,6 @@ OBJ_C     = $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(C_SRC)))
 OBJ_CPP   = $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(notdir $(CPP_SRC)))
 TARGET    = $(TRG_DIR)/$(TRG_FILE)
 
-
-#-----------------------------------------------------------------------------
-define cleanNix
-	rm -rf $(OBJ_DIR) $(TRG_DIR)
-endef
-
-
-
 #------------------------------------------------------------------------------
 .PHONY: all clean print-%
 
