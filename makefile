@@ -48,10 +48,8 @@ all:    $(TARGET)
 
 ifeq ($(detected_OS),Windows)
 clean:
-	@if exist $(OBJ_DIR) del $(OBJ_DIR)\*.o
-	@if exist $(OBJ_DIR) rd  $(OBJ_DIR)
-	@if exist $(TRG_DIR) del $(TRG_DIR)\*.*
-	@if exist $(TRG_DIR) rd  $(TRG_DIR)
+	@if exist $(call fixPath, $(OBJ_DIR)) rd /s /q $(call fixPath, $(OBJ_DIR))
+	@if exist $(call fixPath, $(TRG_DIR)) rd /s /q $(call fixPath, $(TRG_DIR))
 else
 clean:
 	rm -rf $(OBJ_DIR) $(TRG_DIR)
