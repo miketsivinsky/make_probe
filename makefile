@@ -41,15 +41,29 @@ OBJ_C     = $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(C_SRC)))
 OBJ_CPP   = $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(notdir $(CPP_SRC)))
 TARGET    = $(TRG_DIR)/$(TRG_FILE)
 
+
+#-----------------------------------------------------------------------------
+define cleanNix
+	rm -rf $(OBJ_DIR) $(TRG_DIR)
+endef
+
+
+
 #------------------------------------------------------------------------------
 .PHONY: all clean print-%
 
 all:    $(TARGET)
 
+ifeq ($(detected_OS),Windows)
 clean:
 	@if exist $(OBJ_DIR) del $(OBJ_DIR)\*.o
 	@if exist $(OBJ_DIR) rd  $(OBJ_DIR)
-	@if exist $(TARGET)  del $(TARGET)
+	@if exist $(TRG_DIR) del $(TRG_DIR)\*.*
+	@if exist $(TRG_DIR) rd  $(TRG_DIR)
+else
+clean:
+	rm -rf $(OBJ_DIR) $(TRG_DIR)
+endif
 
 print-%:
 	@echo $* = $($*)
